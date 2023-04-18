@@ -40,3 +40,9 @@ huggingface-cli login --token $HUGGINGFACE_TOKEN
 ```bash
 python single_image.py
 ```
+
+### Outpainting
+
+```bash
+python outpainting.py
+```

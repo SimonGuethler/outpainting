@@ -53,7 +53,7 @@ new_image = pipe(
     image=working_image,
     mask_image=mask_image,
     guidance_scale=7.5,
-    num_inference_steps=25,
+    num_inference_steps=10,
     height=output_height,
     width=output_width,
 ).images[0]

@@ -3,6 +3,7 @@ import torch
 from diffusers import StableDiffusionInpaintPipeline
 
 from utils import read_image, save_image
+from create_prompt import create_prompt_from_news
 
 model = "runwayml/stable-diffusion-inpainting"
 
@@ -14,7 +15,7 @@ pipe = StableDiffusionInpaintPipeline.from_pretrained(
 pipe.to("cuda")
 # pipe.enable_attention_slicing()
 
-prompt = "An image of a squirrel in Picasso style"
+prompt = create_prompt_from_news() + ""
 negative_prompt = ""
 
 width = 512

@@ -33,11 +33,6 @@ Add a huggingface token
 huggingface-cli login --token $HUGGINGFACE_TOKEN
 ```
 
-Add NYTimes API-keys:
-
-1. create account and generate keys: https://developer.nytimes.com/apis
-2. add keys to "config.ini"
-
 ## Usage
 
 ### Single Image

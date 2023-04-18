@@ -1,12 +1,13 @@
 from diffusers import DiffusionPipeline
 
 from utils import save_image_series
+from create_prompt import create_prompt_from_news
 
 model = "runwayml/stable-diffusion-v1-5"
 pipe = DiffusionPipeline.from_pretrained(model)
 pipe.to("cuda")
 
-prompt = "An image of a squirrel in Picasso style"
+prompt = create_prompt_from_news() + ''
 negative_prompt = ''
 
 for i in range(10):

@@ -1,7 +1,9 @@
 import os
 
+from PIL import Image
 
-def save_image(image, folder, filename="image"):
+
+def save_image_series(image, folder, filename="image"):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
@@ -16,3 +18,16 @@ def save_image(image, folder, filename="image"):
     new_filename = str(file_num).zfill(4)
 
     image.save(f"{folder}/{new_filename}_{filename}.png")
+
+
+def save_image(image, folder, filename="image"):
+    if not os.path.exists(folder):
+        os.makedirs(folder)
+
+    image.save(f"{folder}/{filename}.png")
+
+
+def read_image(path):
+    if not os.path.exists(path):
+        return None
+    return Image.open(path)

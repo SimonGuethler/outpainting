@@ -1,6 +1,6 @@
 from diffusers import DiffusionPipeline
 
-from utils import save_image
+from utils import save_image_series
 
 model = "runwayml/stable-diffusion-v1-5"
 pipe = DiffusionPipeline.from_pretrained(model)
@@ -21,4 +21,4 @@ for i in range(10):
         width=512
     ).images[0]
 
-    save_image(image, "images", prompt)
+    save_image_series(image, "images", prompt)

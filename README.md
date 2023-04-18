@@ -1,6 +1,6 @@
 # Project Outpainting
 
-> This repo consists of a pipeline to generate an infinite image from a newsfeed via stable diffusion inpainting. 
+> This repo consists of a pipeline to generate an infinite image from a newsfeed via stable diffusion inpainting.
 
 ## Installation
 
@@ -25,6 +25,12 @@ Activate the environment
 
 ```bash
 conda activate outpainting
+```
+
+Add a huggingface token
+
+```bash
+huggingface-cli login --token $HUGGINGFACE_TOKEN
 ```
 
 ## Usage

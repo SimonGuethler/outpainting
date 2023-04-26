@@ -2,8 +2,8 @@ import PIL.Image
 import torch
 from diffusers import StableDiffusionInpaintPipeline
 
-from utils import read_image, save_image
-from create_prompt import create_prompt_from_news
+from src.create_prompt import create_prompt_from_news
+from src.utils import read_image, save_image
 
 
 def outpainting():
@@ -31,12 +31,13 @@ def outpainting():
     print(f'Image: {init_image.size}')
 
     working_image = PIL.Image.new(init_image.mode,
-                                (init_image.width + (width if not first_image else 0), init_image.height), (0, 0, 0))
+                                  (init_image.width + (width if not first_image else 0), init_image.height), (0, 0, 0))
     working_image.paste(init_image, (0, 0, init_image.width, init_image.height))
 
     print(f'Working image: {working_image.size}')
 
-    mask_image = PIL.Image.new("RGB", (init_image.width + (width if not first_image else 0), init_image.height), (0, 0, 0))
+    mask_image = PIL.Image.new("RGB", (init_image.width + (width if not first_image else 0), init_image.height),
+                               (0, 0, 0))
     mask_image.paste((255, 255, 255), (
         init_image.width if not first_image else 0, 0, init_image.width + (width if not first_image else 0),
         init_image.height))

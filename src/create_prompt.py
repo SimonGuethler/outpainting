@@ -9,7 +9,7 @@ import requests
 
 def create_prompt_from_news():
     config = configparser.ConfigParser()
-    config.read('config.ini')
+    config.read('./../config.ini')
     api_key = config.get('api', 'key_nyt')
     api_url = f'https://api.nytimes.com/svc/news/v3/content/all/all.json?api-key={api_key}'
 

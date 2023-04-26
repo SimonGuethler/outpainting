@@ -7,18 +7,20 @@
 Install the Anaconda environment from the provided file
 
 ```bash
-conda create --name outpainting --file environment.yml
+conda env create -f environment.yml
 ```
 
 Set up the environment manually
 
 ```bash
 conda create --name outpainting python=3.10
+conda activate outpainting
 
-conda install -c conda-forge diffusers
-conda install -c conda-forge transformers
-conda install -c conda-forge accelerate
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
+pip install --upgrade Flask
+pip install --upgrade diffusers[torch]
+pip install transformers
+pip install accelerate
 ```
 
 Activate the environment

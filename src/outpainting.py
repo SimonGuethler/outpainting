@@ -12,7 +12,7 @@ def outpainting():
     model = "runwayml/stable-diffusion-inpainting"
     width = 512
     height = 512
-    init_image = read_image("outpainting/image.png")
+    init_image = read_image("../outpainting/image.png")
 
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         model,
@@ -58,7 +58,3 @@ def outpainting():
     ).images[0]
 
     save_image(new_image, "outpainting", "image")
-
-
-for i in range(3):
-    outpainting()

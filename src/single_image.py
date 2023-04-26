@@ -7,7 +7,7 @@ model = "runwayml/stable-diffusion-v1-5"
 pipe = DiffusionPipeline.from_pretrained(model)
 pipe.to("cuda")
 
-prompt = create_prompt_from_news() + ''
+prompt = create_prompt_from_news()
 negative_prompt = ''
 
 for i in range(10):

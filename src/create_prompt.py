@@ -7,9 +7,9 @@ import requests
 
 # from pytrends.request import TrendReq
 
-def create_prompt_from_news():
+def create_prompt_from_news() -> str:
     config = configparser.ConfigParser()
-    config.read('./../config.ini')
+    config.read('config.ini')
     api_key = config.get('api', 'key_nyt')
     api_url = f'https://api.nytimes.com/svc/news/v3/content/all/all.json?api-key={api_key}'
 
@@ -19,6 +19,7 @@ def create_prompt_from_news():
 
         for index, article in enumerate(data['results'], start=1):
             prompt = ''
+            prompt_clean = ''
             for key, value in article.items():
                 if value is not None and value != '':
                     if key in (  # 'section', 'subsection',
@@ -31,10 +32,10 @@ def create_prompt_from_news():
                                                                        prompt.strip()))
 
             print(f'{prompt_clean}')
-            return (f'{prompt_clean}')  # return the first result
-            print('\n')
+            return f'{prompt_clean}'  # return the first result
     else:
         print(f'Request failed with status code: {response.status_code}')
+    return ''
 
 
 def create_prompt_from_history():

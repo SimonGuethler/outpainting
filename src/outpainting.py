@@ -7,12 +7,12 @@ from src.utils import read_image, save_image
 
 
 def outpainting():
-    prompt = create_prompt_from_news() + ""
+    prompt = create_prompt_from_news()
     negative_prompt = ""
     model = "runwayml/stable-diffusion-inpainting"
     width = 512
     height = 512
-    init_image = read_image("../outpainting/image.png")
+    init_image = read_image("outpainting/image.png")
 
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         model,

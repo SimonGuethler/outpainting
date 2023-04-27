@@ -4,8 +4,8 @@ name: stsiguet
 services:
   outpainting:
     build: .
-#    ports:
-#      - "8000:8000"
+    ports:
+      - "8000:8000"
     container_name: stsiguet-outpainting
     deploy:
       resources:

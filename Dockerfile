@@ -21,17 +21,15 @@ RUN echo "conda activate outpainting" >> ~/.bashrc
 
 # Install dependencies
 RUN conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
-RUN pip install --upgrade Flask
 RUN pip install --upgrade diffusers[torch]
 RUN pip install transformers
 RUN pip install accelerate
+RUN pip install --upgrade Flask
 RUN pip install waitress
 
 # Copy the project
-COPY ./src ./src
-COPY config.ini .
-COPY run.py .
+COPY . .
 
 EXPOSE 8000
-ENTRYPOINT ["python", "serve.py"]
+CMD bash -C 'serve.sh';'bash'
 #ENTRYPOINT ["tail", "-f", "/dev/null"]

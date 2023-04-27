@@ -21,6 +21,7 @@ pip install --upgrade Flask
 pip install --upgrade diffusers[torch]
 pip install transformers
 pip install accelerate
+pip install waitress
 ```
 
 Activate the environment

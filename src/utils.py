@@ -3,9 +3,17 @@ import os
 from PIL import Image
 
 
-def save_image_series(image, folder, filename="image"):
+def check_if_folder_exists(folder):
     if not os.path.exists(folder):
         os.makedirs(folder)
+
+
+def check_if_file_exists(path):
+    return os.path.exists(path)
+
+
+def save_image_series(image, folder, filename="image"):
+    check_if_folder_exists(folder)
 
     files = os.listdir(folder)
 
@@ -21,13 +29,19 @@ def save_image_series(image, folder, filename="image"):
 
 
 def save_image(image, folder, filename="image"):
-    if not os.path.exists(folder):
-        os.makedirs(folder)
+    check_if_folder_exists(folder)
 
     image.save(f"{folder}/{filename}.png")
 
 
 def read_image(path):
-    if not os.path.exists(path):
+    if not check_if_file_exists(path):
         return None
     return Image.open(path)
+
+
+def write_to_file(path, file, text, append=False):
+    check_if_folder_exists(path)
+
+    with open(f'{path}/{file}', 'a' if append else 'w') as file:
+        file.write(text)

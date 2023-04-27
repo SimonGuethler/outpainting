@@ -25,13 +25,13 @@ RUN pip install --upgrade Flask
 RUN pip install --upgrade diffusers[torch]
 RUN pip install transformers
 RUN pip install accelerate
+RUN pip install waitress
 
 # Copy the project
 COPY ./src ./src
 COPY config.ini .
 COPY run.py .
 
-#EXPOSE 8000
-#ENTRYPOINT ["python", "run.py"]
-#CMD ["python3", "-m" , "flask", "run", "--host=0.0.0.0"]
-ENTRYPOINT ["tail", "-f", "/dev/null"]
+EXPOSE 8000
+ENTRYPOINT ["python", "serve.py"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]

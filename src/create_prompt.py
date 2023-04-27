@@ -4,6 +4,8 @@ from datetime import datetime
 
 import requests
 
+from src.utils import write_to_file
+
 
 # from pytrends.request import TrendReq
 
@@ -32,6 +34,7 @@ def create_prompt_from_news() -> str:
                                                                        prompt.strip()))
 
             print(f'{prompt_clean}')
+            write_to_file('outpainting', 'prompts.txt', f'{prompt_clean}\n', append=True)
             return f'{prompt_clean}'  # return the first result
     else:
         print(f'Request failed with status code: {response.status_code}')

@@ -2,11 +2,11 @@ version: '3'
 name: stsiguet
 
 services:
-  outpainting:
+  outpainting-api:
     build: .
     ports:
       - "8000:8000"
-    container_name: stsiguet-outpainting
+    container_name: stsiguet-outpainting-api
     deploy:
       resources:
         reservations:

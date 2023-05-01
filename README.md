@@ -18,6 +18,7 @@ conda activate outpainting
 
 conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
 pip install --upgrade Flask
+pip install --upgrade flask-cors
 pip install --upgrade diffusers[torch]
 pip install transformers
 pip install accelerate

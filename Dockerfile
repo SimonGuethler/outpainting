@@ -25,6 +25,7 @@ RUN pip install --upgrade diffusers[torch]
 RUN pip install transformers
 RUN pip install accelerate
 RUN pip install --upgrade Flask
+RUN pip install --upgrade flask-cors
 RUN pip install waitress
 
 # Copy the project

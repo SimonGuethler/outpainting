@@ -40,6 +40,13 @@ def read_image(path):
     return Image.open(path)
 
 
+def read_text(path):
+    if not check_if_file_exists(path):
+        return None
+    with open(path, 'r') as file:
+        return file.read()
+
+
 def write_to_file(path, file, text, append=False):
     check_if_folder_exists(path)
 

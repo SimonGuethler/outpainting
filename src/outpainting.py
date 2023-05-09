@@ -57,9 +57,9 @@ def outpainting():
         height=output_height,
         width=output_width,
     ).images[0]
-    
+
     if not first_image:
-        cropped_image = generated_image.crop((width, 0, width*2, height))
+        cropped_image = generated_image.crop((width, 0, width * 2, height))
         save_image_batched(cropped_image, "outpainting", "image")
     else:
         save_image(generated_image, "outpainting", "0001_image")

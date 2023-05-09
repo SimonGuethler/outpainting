@@ -60,6 +60,10 @@ def generate():
 
 @app.route('/reset', methods=['GET'])
 def reset():
+    image_files = get_image_names('outpainting')
+    for file in image_files:
+        os.remove(os.path.join('outpainting', file))
+
     if check_if_file_exists("outpainting/image.png"):
         os.remove("outpainting/image.png")
     if check_if_file_exists("outpainting/prompts.txt"):

@@ -3,14 +3,16 @@ import re
 
 from PIL import Image
 
+ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
 
 def check_if_folder_exists(folder):
     if not os.path.exists(folder):
         os.makedirs(folder)
 
 
-def check_if_file_exists(path):
-    return os.path.exists(path)
+def check_if_file_exists(path) -> bool:
+    return path and os.path.exists(path)
 
 
 def save_image_series(image, folder, filename="image"):
@@ -35,13 +37,13 @@ def save_image(image, folder, filename="image"):
     image.save(f"{folder}/{filename}.png")
 
 
-def read_image(path):
+def read_image(path) -> Image or None:
     if not check_if_file_exists(path):
         return None
     return Image.open(path)
 
 
-def read_text(path):
+def read_text(path) -> str or None:
     if not check_if_file_exists(path):
         return None
     with open(path, 'r') as file:
@@ -71,7 +73,7 @@ def save_image_batched(image, directory, filename="image"):
     image.save(os.path.join(directory, filename))
 
 
-def read_image_batched(directory, filename="image"):
+def read_image_batched(directory, filename="image") -> Image or None:
     check_if_folder_exists(directory)
     files = os.listdir(directory)
 
@@ -89,3 +91,54 @@ def read_image_batched(directory, filename="image"):
         return Image.open(os.path.join(directory, latest_filename))
     else:
         return None
+
+
+def get_image_names(directory, input_schema=rf'^(\d+)_{"image"}\.png$', image_extension='.png') -> list[str]:
+    return sorted(
+        [file for file in os.listdir(directory) if file.endswith(image_extension) and re.search(input_schema, file)])
+
+
+def build_complete_image(directory, input_schema=rf'^(\d+)_{"image"}\.png$', output_image_name="image",
+                         image_extension='.png') -> Image or None:
+    image_files = sorted(
+        [file for file in os.listdir(directory) if file.endswith(image_extension) and re.search(input_schema, file)])
+
+    if len(image_files) == 0:
+        return None
+
+    first_image = Image.open(os.path.join(directory, image_files[0]))
+    width, height = first_image.size
+
+    concatenated_image = Image.new('RGB', (width * len(image_files), height))
+
+    for i, image_file in enumerate(image_files):
+        image_path = os.path.join(directory, image_file)
+        image = Image.open(image_path)
+        concatenated_image.paste(image, (i * width, 0))
+
+    concatenated_image.save(os.path.join(directory, output_image_name + image_extension))
+
+    first_image.close()
+    return concatenated_image
+
+
+def get_image_path_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$',
+                             image_extension='.png') -> str or None:
+    complete_path: str = os.path.join(ROOT_DIR, directory)
+    image_files = sorted(
+        [file for file in os.listdir(complete_path) if
+         file.endswith(image_extension) and re.search(input_schema, file)])
+
+    if len(image_files) == 0 or index >= len(image_files):
+        return None
+
+    return os.path.join(complete_path, image_files[index])
+
+
+def get_image_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$',
+                        image_extension='.png') -> Image or None:
+    complete_path: str = os.path.join(ROOT_DIR, directory)
+    image_path = get_image_path_for_index(complete_path, index, input_schema, image_extension)
+    if image_path is None:
+        return None
+    return Image.open(image_path)

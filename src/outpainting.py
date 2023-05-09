@@ -3,7 +3,7 @@ import torch
 from diffusers import StableDiffusionInpaintPipeline
 
 from src.create_prompt import create_prompt_from_news
-from src.utils import read_image, save_image
+from src.utils import save_image, read_image_batched, save_image_batched
 
 
 def outpainting():
@@ -12,7 +12,7 @@ def outpainting():
     model = "runwayml/stable-diffusion-inpainting"
     width = 512
     height = 512
-    init_image = read_image("outpainting/image.png")
+    init_image = read_image_batched("outpainting", "image")
 
     pipe = StableDiffusionInpaintPipeline.from_pretrained(
         model,
@@ -47,7 +47,7 @@ def outpainting():
     output_height = init_image.height
     output_width = init_image.width + (width if not first_image else 0)
 
-    new_image = pipe(
+    generated_image = pipe(
         prompt=prompt,
         negative_prompt=negative_prompt,
         image=working_image,
@@ -57,5 +57,10 @@ def outpainting():
         height=output_height,
         width=output_width,
     ).images[0]
-
-    save_image(new_image, "outpainting", "image")
+    
+    if not first_image:
+        cropped_image = generated_image.crop((width, 0, width*2, height))
+        save_image_batched(cropped_image, "outpainting", "image")
+    else:
+        save_image(generated_image, "outpainting", "0001_image")
+outpainting()

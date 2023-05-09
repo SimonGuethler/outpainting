@@ -63,4 +63,3 @@ def outpainting():
         save_image_batched(cropped_image, "outpainting", "image")
     else:
         save_image(generated_image, "outpainting", "0001_image")
-outpainting()

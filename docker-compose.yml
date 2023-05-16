@@ -14,9 +14,3 @@ services:
             - driver: nvidia
               device_ids: [ '0' ]
               capabilities: [ gpu ]
-    volumes:
-      - outpainting:/root/.cache/huggingface
-      - ./outpainting:/app/outpainting
-
-volumes:
-  outpainting:

@@ -16,6 +16,7 @@ services:
               capabilities: [ gpu ]
     volumes:
       - outpainting:/root/.cache/huggingface
+      - ./outpainting:/app/outpainting
 
 volumes:
   outpainting:

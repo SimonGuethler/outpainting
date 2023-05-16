@@ -1,4 +1,5 @@
 import os
+import threading
 
 from flask import Flask, send_file, render_template, Response, request
 from flask_cors import CORS
@@ -8,6 +9,8 @@ from src.utils import check_if_file_exists, read_text, get_image_path_for_index,
 
 app = Flask(__name__, template_folder='../html')
 CORS(app)
+
+generation_semaphore = threading.Semaphore()
 
 
 @app.route('/', methods=['GET'])
@@ -53,8 +56,11 @@ def prompts():
 
 @app.route('/generate', methods=['GET'])
 def generate():
-    outpainting()
-
+    count = request.args.get('count', default=1, type=int)
+    generation_semaphore.acquire()
+    for _ in range(count):
+        outpainting()
+    generation_semaphore.release()
     return Response()
 
 

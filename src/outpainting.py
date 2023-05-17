@@ -5,11 +5,13 @@ from diffusers import StableDiffusionInpaintPipeline
 from src.create_prompt import create_prompt_from_news
 from src.outpainting_config import OutPaintingConfig
 from src.utils import save_image, read_image_batched, save_image_batched
+from src.aesthetic_predictor import AestheticPredictor
 
 
 class Outpainting:
     def __init__(self):
         self.outpainting_config = OutPaintingConfig()
+        self.aesthetic_predictor = AestheticPredictor()
 
         # init model/pipe
         model = self.outpainting_config.get_config("outpainting", "model") or "runwayml/stable-diffusion-inpainting"
@@ -54,21 +56,25 @@ class Outpainting:
             init_image.width if not first_image else 0, 0, init_image.width + (width if not first_image else 0),
             init_image.height))
 
-        # generate image
-        generated_image = self.pipe(
-            prompt=prompt,
-            negative_prompt=negative_prompt,
-            image=working_image,
-            mask_image=mask_image,
-            guidance_scale=guidance_scale,
-            num_inference_steps=num_inference_steps,
-            height=output_height,
-            width=output_width,
-        ).images[0]
+        quality = 0
+        while quality < 7:
+            # generate image
+            generated_image = self.pipe(
+                prompt=prompt,
+                negative_prompt=negative_prompt,
+                image=working_image,
+                mask_image=mask_image,
+                guidance_scale=guidance_scale,
+                num_inference_steps=num_inference_steps,
+                height=output_height,
+                width=output_width,
+            ).images[0]
 
-        # save image
-        if not first_image:
-            cropped_image = generated_image.crop((width, 0, width * 2, height))
-            save_image_batched(cropped_image, "outpainting", "image")
+            # check quality
+            quality = self.aesthetic_predictor.eval_image(generated_image)
         else:
-            save_image(generated_image, "outpainting", "0001_image")
+            if not first_image:
+                cropped_image = generated_image.crop((width, 0, width * 2, height))
+                save_image_batched(cropped_image, "outpainting", "image")
+            else:
+                save_image(generated_image, "outpainting", "0001_image")

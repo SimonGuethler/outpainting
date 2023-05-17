@@ -61,7 +61,8 @@ class Outpainting:
             init_image.height))
 
         quality = 0
-        while quality < 7:
+        quality_threshold = self.outpainting_config.get_config_int("outpainting", "quality_threshold")
+        while quality < quality_threshold:
             # generate image
             generated_image = self.pipe(
                 prompt=prompt,

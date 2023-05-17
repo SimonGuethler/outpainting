@@ -4,7 +4,7 @@ import threading
 from flask import Flask, send_file, render_template, Response, request
 from flask_cors import CORS
 
-from src.outpainting import outpainting
+from src.outpainting import Outpainting
 from src.utils import check_if_file_exists, read_text, get_image_path_for_index, build_complete_image, get_image_names
 
 app = Flask(__name__, template_folder='../html')
@@ -58,8 +58,9 @@ def prompts():
 def generate():
     count = request.args.get('count', default=1, type=int)
     generation_semaphore.acquire()
+    outpainting = Outpainting()
     for _ in range(count):
-        outpainting()
+        outpainting.generate_image()
     generation_semaphore.release()
     return Response()
 

@@ -9,18 +9,22 @@ from src.aesthetic_predictor import AestheticPredictor
 
 
 class Outpainting:
-    def __init__(self):
-        self.outpainting_config = OutPaintingConfig()
-        self.aesthetic_predictor = AestheticPredictor()
+    _shared_state = {}
 
-        # init model/pipe
-        model = self.outpainting_config.get_config("outpainting", "model") or "runwayml/stable-diffusion-inpainting"
-        self.pipe = StableDiffusionInpaintPipeline.from_pretrained(
-            model,
-            revision="fp16",
-            torch_dtype=torch.float16
-        )
-        self.pipe.to("cuda")
+    def __init__(self):
+        self.__dict__ = self._shared_state
+        if not self._shared_state:
+            self.outpainting_config = OutPaintingConfig()
+            self.aesthetic_predictor = AestheticPredictor()
+
+            # init model/pipe
+            model = self.outpainting_config.get_config("outpainting", "model") or "runwayml/stable-diffusion-inpainting"
+            self.pipe = StableDiffusionInpaintPipeline.from_pretrained(
+                model,
+                revision="fp16",
+                torch_dtype=torch.float16
+            )
+            self.pipe.to("cuda")
         
 
     def generate_image(self):

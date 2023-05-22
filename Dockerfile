@@ -27,6 +27,7 @@ RUN pip install accelerate
 RUN pip install --upgrade Flask
 RUN pip install --upgrade flask-cors
 RUN pip install waitress
+RUN pip install open-clip-torch
 
 # Copy the project
 COPY . .

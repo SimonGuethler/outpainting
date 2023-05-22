@@ -136,6 +136,17 @@ def get_image_path_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"
     return os.path.join(complete_path, image_files[index])
 
 
+def get_image_name_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$') -> str or None:
+    complete_path: str = os.path.join(ROOT_DIR, directory)
+    image_files = sorted(
+        [file for file in os.listdir(complete_path) if re.search(input_schema, file)])
+
+    if len(image_files) == 0 or index >= len(image_files):
+        return None
+
+    return image_files[index]
+
+
 def get_image_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$',
                         image_extension='.png') -> Image or None:
     complete_path: str = os.path.join(ROOT_DIR, directory)

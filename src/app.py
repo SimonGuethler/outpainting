@@ -5,7 +5,8 @@ from flask import Flask, send_file, render_template, Response, request
 from flask_cors import CORS
 
 from src.outpainting import Outpainting
-from src.utils import check_if_file_exists, read_text, get_image_path_for_index, build_complete_image, get_image_names
+from src.utils import check_if_file_exists, read_text, build_complete_image, get_image_names, \
+    get_image_name_for_index
 
 app = Flask(__name__, template_folder='../html', static_folder='../outpainting')
 CORS(app)
@@ -30,12 +31,11 @@ def download():
 def image():
     img_index = request.args.get('img', default=0, type=int)
 
-    image_path = get_image_path_for_index('outpainting', img_index, input_schema=rf'^(\d+)_{"image"}\.webp$')
+    image_filename = get_image_name_for_index('outpainting', img_index, input_schema=rf'^(\d+)_{"image"}\.webp$')
 
-    if not check_if_file_exists(image_path):
+    if not image_filename:
         return Response(status=404)
 
-    image_filename = image_path.split('\\')[-1]
     base_url = request.base_url
     base_url = base_url[:base_url.rfind('/') + 1]
     image_url = base_url + 'outpainting/' + image_filename

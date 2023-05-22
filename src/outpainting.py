@@ -62,6 +62,7 @@ class Outpainting:
 
         quality = 0
         quality_threshold = self.outpainting_config.get_config_int("outpainting", "quality_threshold")
+        quality_step = self.outpainting_config.get_config_float("outpainting", "quality_step")
         while quality < quality_threshold:
             # generate image
             generated_image = self.pipe(
@@ -77,6 +78,7 @@ class Outpainting:
 
             # check quality
             quality = self.aesthetic_predictor.eval_image(generated_image)
+            quality_threshold -= quality_step
         else:
             if not first_image:
                 cropped_image = generated_image.crop((width, 0, width * 2, height))

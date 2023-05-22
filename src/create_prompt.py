@@ -25,8 +25,9 @@ def create_prompt_from_news() -> str:
             for key, value in article.items():
                 if value is not None and value != '':
                     if key in (  # 'section', 'subsection',
-                            'title', 'abstract', 'subheadline',
-                            'des_facet', 'geo_facet'):
+                            'title'#, 'abstract', 'subheadline',
+                            #'des_facet', 'geo_facet'
+                            ):
                         subprompt = re.sub(r'[^\w\s]', '', f'{value}')  # remove special characters
                         prompt += f'{subprompt}, '
                         # remove duplicate whitespaces and clean commas

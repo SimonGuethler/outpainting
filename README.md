@@ -39,14 +39,14 @@ huggingface-cli login --token $HUGGINGFACE_TOKEN
 
 ## Usage
 
-### Single Image
+### Development
 
 ```bash
-python single_image.py
+python flask-dev.py
 ```
 
-### Outpainting
+### Production
 
 ```bash
-python outpainting.py
+python serve.py
 ```

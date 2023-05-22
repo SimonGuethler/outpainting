@@ -61,7 +61,7 @@ class Outpainting:
             init_image.height))
 
         quality = 0
-        quality_threshold = self.outpainting_config.get_config_int("outpainting", "quality_threshold")
+        quality_threshold = self.outpainting_config.get_config_float("outpainting", "quality_threshold")
         quality_step = self.outpainting_config.get_config_float("outpainting", "quality_step")
         while quality < quality_threshold:
             # generate image

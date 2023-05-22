@@ -7,7 +7,7 @@ from flask_cors import CORS
 from src.outpainting import Outpainting
 from src.utils import check_if_file_exists, read_text, get_image_path_for_index, build_complete_image, get_image_names
 
-app = Flask(__name__, template_folder='../html')
+app = Flask(__name__, template_folder='../html', static_folder='../outpainting')
 CORS(app)
 
 generation_semaphore = threading.Semaphore()
@@ -35,7 +35,12 @@ def image():
     if not check_if_file_exists(image_path):
         return Response(status=404)
 
-    return send_file(image_path, as_attachment=False)
+    image_filename = image_path.split('\\')[-1]
+    base_url = request.base_url
+    base_url = base_url[:base_url.rfind('/') + 1]
+    image_url = base_url + 'outpainting/' + image_filename
+
+    return image_url
 
 
 @app.route('/image_count', methods=['GET'])

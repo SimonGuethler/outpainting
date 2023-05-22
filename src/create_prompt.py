@@ -39,6 +39,7 @@ def create_prompt_from_news() -> str:
                 return f'{prompt_clean}'  # return the first new result
     else:
         print(f'Request failed with status code: {response.status_code}')
+    write_to_file('outpainting', 'prompts.txt', '', append=True)
     return ''
 
 

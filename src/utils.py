@@ -146,8 +146,9 @@ def get_image_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.pn
 
 def is_in_file(path, file, string):
     string = string.lower()
-    with open(f'{path}/{file}', 'r') as read_obj:
-        for line in read_obj:
-            if string in line.lower():
-                return True
+    if check_if_file_exists(f'{path}/{file}'):
+        with open(f'{path}/{file}', 'r') as read_obj:
+            for line in read_obj:
+                if string in line.lower():
+                    return True
     return False

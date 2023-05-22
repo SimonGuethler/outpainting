@@ -33,7 +33,7 @@ def create_prompt_from_news() -> str:
                         # remove duplicate whitespaces and clean commas
                         prompt_clean = re.sub(r'\s*,\s*', ', ', re.sub(r'\s+', ' ',
                                                                        prompt.strip()))
-
+                        prompt_clean = re.sub(r',\s*$', '', prompt_clean)   # remove trailing commas
             if not is_in_file('outpainting', 'prompts.txt', prompt_clean):
                 write_to_file('outpainting', 'prompts.txt', f'{prompt_clean}\n', append=True)
                 return f'{prompt_clean}'  # return the first new result

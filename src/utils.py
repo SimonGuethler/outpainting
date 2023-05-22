@@ -31,10 +31,12 @@ def save_image_series(image, folder, filename="image"):
     image.save(f"{folder}/{new_filename}_{filename}.png")
 
 
-def save_image(image, folder, filename="image"):
+def save_image(image, folder, filename="image") -> str:
     check_if_folder_exists(folder)
 
-    image.save(f"{folder}/{filename}.png")
+    filename = f'{filename}.png'
+    image.save(os.path.join(folder, filename))
+    return filename
 
 
 def read_image(path) -> Image or None:
@@ -57,7 +59,7 @@ def write_to_file(path, file, text, append=False):
         file.write(text)
 
 
-def save_image_batched(image, directory, filename="image"):
+def save_image_batched(image, directory, filename="image") -> str:
     check_if_folder_exists(directory)
     files = os.listdir(directory)
 
@@ -71,6 +73,7 @@ def save_image_batched(image, directory, filename="image"):
 
     filename = f'{latest_file_int + 1:04}_{filename}.png'
     image.save(os.path.join(directory, filename))
+    return filename
 
 
 def read_image_batched(directory, filename="image") -> Image or None:
@@ -122,12 +125,10 @@ def build_complete_image(directory, input_schema=rf'^(\d+)_{"image"}\.png$', out
     return concatenated_image
 
 
-def get_image_path_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$',
-                             image_extension='.png') -> str or None:
+def get_image_path_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$') -> str or None:
     complete_path: str = os.path.join(ROOT_DIR, directory)
     image_files = sorted(
-        [file for file in os.listdir(complete_path) if
-         file.endswith(image_extension) and re.search(input_schema, file)])
+        [file for file in os.listdir(complete_path) if re.search(input_schema, file)])
 
     if len(image_files) == 0 or index >= len(image_files):
         return None
@@ -152,3 +153,12 @@ def is_in_file(path, file, string):
                 if string in line.lower():
                     return True
     return False
+
+
+def convert_img_to_webp(input_path, quality=80):
+    if not check_if_file_exists(input_path):
+        return
+
+    image = Image.open(input_path)
+    output_path = input_path.split(".")[0] + ".webp"
+    image.save(output_path, "WebP", quality=quality)

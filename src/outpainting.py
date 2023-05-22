@@ -2,10 +2,10 @@ import PIL.Image
 import torch
 from diffusers import StableDiffusionInpaintPipeline
 
+from src.aesthetic_predictor import AestheticPredictor
 from src.create_prompt import create_prompt_from_news
 from src.outpainting_config import OutPaintingConfig
-from src.utils import save_image, read_image_batched, save_image_batched
-from src.aesthetic_predictor import AestheticPredictor
+from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp
 
 
 class Outpainting:
@@ -25,7 +25,6 @@ class Outpainting:
                 torch_dtype=torch.float16
             )
             self.pipe.to("cuda")
-        
 
     def generate_image(self):
         # load params
@@ -50,12 +49,13 @@ class Outpainting:
 
         # create working image
         working_image = PIL.Image.new(init_image.mode,
-                                    (init_image.width + (width if not first_image else 0), init_image.height), (0, 0, 0))
+                                      (init_image.width + (width if not first_image else 0), init_image.height),
+                                      (0, 0, 0))
         working_image.paste(init_image, (0, 0, init_image.width, init_image.height))
 
         # create mask image
         mask_image = PIL.Image.new("RGB", (init_image.width + (width if not first_image else 0), init_image.height),
-                                (0, 0, 0))
+                                   (0, 0, 0))
         mask_image.paste((255, 255, 255), (
             init_image.width if not first_image else 0, 0, init_image.width + (width if not first_image else 0),
             init_image.height))
@@ -82,6 +82,8 @@ class Outpainting:
         else:
             if not first_image:
                 cropped_image = generated_image.crop((width, 0, width * 2, height))
-                save_image_batched(cropped_image, "outpainting", "image")
+                filename = save_image_batched(cropped_image, "outpainting", "image")
+                convert_img_to_webp(f"outpainting/{filename}")
             else:
-                save_image(generated_image, "outpainting", "0001_image")
+                filename = save_image(generated_image, "outpainting", "0001_image")
+                convert_img_to_webp(f"outpainting/{filename}")

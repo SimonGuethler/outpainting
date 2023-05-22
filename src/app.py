@@ -30,7 +30,7 @@ def download():
 def image():
     img_index = request.args.get('img', default=0, type=int)
 
-    image_path = get_image_path_for_index('outpainting', img_index)
+    image_path = get_image_path_for_index('outpainting', img_index, input_schema=rf'^(\d+)_{"image"}\.webp$')
 
     if not check_if_file_exists(image_path):
         return Response(status=404)

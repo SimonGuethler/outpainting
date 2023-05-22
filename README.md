@@ -23,6 +23,7 @@ pip install --upgrade diffusers[torch]
 pip install transformers
 pip install accelerate
 pip install waitress
+pip install open-clip-torch
 ```
 
 Activate the environment

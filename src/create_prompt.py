@@ -4,12 +4,24 @@ from datetime import datetime
 
 import requests
 
-from src.utils import write_to_file, is_in_file
-
+from src.utils import is_in_file
+from newsapi import NewsApiClient
 
 # from pytrends.request import TrendReq
 
+
 def create_prompt_from_news() -> str:
+    # main api
+    prompt = call_nyt_api()
+    if prompt == '' or prompt == None:
+        # backup api
+        prompt = call_news_api()
+        if prompt == '' or prompt == None:
+            return '-'
+    return prompt
+
+
+def call_nyt_api() -> str:
     config = configparser.ConfigParser()
     config.read('config.ini')
     api_key = config.get('api', 'key_nyt')
@@ -19,26 +31,43 @@ def create_prompt_from_news() -> str:
     if response.status_code == 200:
         data = response.json()
 
-        for index, article in enumerate(data['results'], start=1):
-            prompt = ''
-            prompt_clean = ''
+        for _, article in enumerate(data['results'], start=1):
             for key, value in article.items():
-                if value is not None and value != '':
-                    if key in (  # 'section', 'subsection',
-                            'title'#, 'abstract', 'subheadline',
-                            #'des_facet', 'geo_facet'
-                            ):
-                        subprompt = re.sub(r'[^\w\s]', '', f'{value}')  # remove special characters
-                        prompt += f'{subprompt}, '
-                        # remove duplicate whitespaces and clean commas
-                        prompt_clean = re.sub(r'\s*,\s*', ', ', re.sub(r'\s+', ' ',
-                                                                       prompt.strip()))
-                        prompt_clean = re.sub(r',\s*$', '', prompt_clean)   # remove trailing commas
-            if not is_in_file('outpainting', 'prompts.txt', prompt_clean):
-                return f'{prompt_clean}'  # return the first new result
+                if value and key == 'title':
+                    prompt = clean_prompt(value)
+
+                    # return the first new result
+                    if not is_in_file('outpainting', 'prompts.txt', prompt):
+                        return f'{prompt}'
     else:
         print(f'Request failed with status code: {response.status_code}')
     return ''
+
+
+def call_news_api() -> str:
+    config = configparser.ConfigParser()
+    config.read('config.ini')
+    api_key = config.get('api', 'key')
+
+    newsapi = NewsApiClient(api_key=api_key)
+
+    top_headlines = newsapi.get_top_headlines(language='en')
+
+    for article in top_headlines['articles']:
+        title = article['title']
+        title = title.rpartition(' - ')[0].strip()
+        prompt = clean_prompt(title)
+
+        # return the first new result
+        if not is_in_file('outpainting', 'prompts.txt', prompt):
+            return f'{prompt}'
+
+
+def clean_prompt(prompt) -> str:
+    prompt_clean = re.sub(r'[^a-zA-Z0-9\s]', '', f'{prompt}')  # remove special characters
+    prompt_clean = ' '.join(prompt_clean.split())  # remove duplicate white spaces
+    # prompt_clean = re.sub(r'\s*,\s*', ', ', prompt_clean)  # create clean commas
+    return prompt_clean
 
 
 def create_prompt_from_history():
@@ -54,6 +83,7 @@ def create_prompt_from_history():
         return (text)
     else:
         print(f'Request failed with status code: {response.status_code}')
+
 
 # def create_prompt_from_trends():
 #     pytrends = TrendReq(hl='en-US', tz=360)

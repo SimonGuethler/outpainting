@@ -43,6 +43,40 @@ def image():
     return image_url
 
 
+@app.route('/images', methods=['GET'])
+def images():
+    image_files = get_image_names('outpainting')
+    if len(image_files) == 0:
+        return Response(status=404)
+
+    base_url = request.base_url
+    base_url = base_url[:base_url.rfind('/') + 1]
+    image_urls = [base_url + 'outpainting/' + file for file in image_files]
+
+    return image_urls
+
+
+@app.route('/data', methods=['GET'])
+def data():
+    image_files = get_image_names('outpainting', input_schema=rf'^(\d+)_{"image"}\.webp$')
+    prompts_input = read_text("outpainting/prompts.txt")
+
+    if prompts_input is None:
+        return Response(status=404)
+
+    parse = prompts_input.split("\n")
+    prompts_return = [i.strip() for i in parse if i != ""]
+
+    base_url = request.base_url
+    base_url = base_url[:base_url.rfind('/') + 1]
+
+    result = []
+    for i in range(len(image_files)):
+        result.append({"image": base_url + 'outpainting/' + image_files[i], "prompt": prompts_return[i]})
+
+    return result
+
+
 @app.route('/image_count', methods=['GET'])
 def image_count():
     image_files = get_image_names('outpainting')

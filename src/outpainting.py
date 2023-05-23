@@ -41,6 +41,7 @@ class Outpainting:
         default_prompt = self.outpainting_config.get_config("outpainting", "positive_prompt")
         news_prompt = create_prompt_from_news()
         negative_prompt = self.outpainting_config.get_config("outpainting", "negative_prompt")
+        pre_prompt = self.outpainting_config.get_config("outpainting", "pre_prompt")
         guidance_scale = self.outpainting_config.get_config_float("outpainting", "guidance_scale") or 7.5
         guidance_scale_trans = self.outpainting_config.get_config_float("outpainting", "guidance_scale_trans") or 7.5
         num_inference_steps = self.outpainting_config.get_config_int("outpainting", "num_inference_steps") or 10
@@ -55,7 +56,7 @@ class Outpainting:
         while quality < quality_threshold:
             # generate image
             generated_image = self.main_pipe(
-                prompt=news_prompt + ', ' + default_prompt,
+                prompt=pre_prompt + ' ' + news_prompt + ', ' + default_prompt,
                 negative_prompt=negative_prompt,
                 guidance_scale=guidance_scale,
                 num_inference_steps=num_inference_steps,

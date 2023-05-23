@@ -96,9 +96,9 @@ def read_image_batched(directory, filename="image") -> Image or None:
         return None
 
 
-def get_image_names(directory, input_schema=rf'^(\d+)_{"image"}\.png$', image_extension='.png') -> list[str]:
+def get_image_names(directory, input_schema=rf'^(\d+)_{"image"}\.png$') -> list[str]:
     return sorted(
-        [file for file in os.listdir(directory) if file.endswith(image_extension) and re.search(input_schema, file)])
+        [file for file in os.listdir(directory) if re.search(input_schema, file)])
 
 
 def build_complete_image(directory, input_schema=rf'^(\d+)_{"image"}\.png$', output_image_name="image",

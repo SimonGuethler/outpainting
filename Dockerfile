@@ -28,6 +28,7 @@ RUN pip install --upgrade Flask
 RUN pip install --upgrade flask-cors
 RUN pip install waitress
 RUN pip install open-clip-torch
+RUN pip install newsapi-python
 
 # Copy the project
 COPY . .

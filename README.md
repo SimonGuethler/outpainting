@@ -24,6 +24,7 @@ pip install transformers
 pip install accelerate
 pip install waitress
 pip install open-clip-torch
+pip install newsapi-python
 ```
 
 Activate the environment

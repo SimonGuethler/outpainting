@@ -71,27 +71,25 @@ class Outpainting:
         init_image = read_image_batched("outpainting", "image")
         if init_image is not None:
             # load image
-            first_image = False
             if init_image is None:
                 init_image = PIL.Image.new("RGB", (width, height), (0, 0, 0))
-                first_image = True
 
             # set params
             output_height = init_image.height
-            output_width = init_image.width + (2 * width if not first_image else 0)
+            output_width = init_image.width + 2 * width
 
             # create working image
             working_image = PIL.Image.new(init_image.mode,
-                                        (init_image.width + (2 * width if not first_image else 0), init_image.height),
+                                        (init_image.width + 2 * width, init_image.height),
                                         (0, 0, 0))
             working_image.paste(init_image, (0, 0, init_image.width, init_image.height))    # left image
             working_image.paste(generated_image, (init_image.width + width, 0, init_image.width + width + generated_image.width, generated_image.height))    # right image
 
             # create mask image
-            mask_image = PIL.Image.new("RGB", (init_image.width + (2 * width if not first_image else 0), init_image.height),
+            mask_image = PIL.Image.new("RGB", (init_image.width + 2 * width, init_image.height),
                                     (0, 0, 0))
             mask_image.paste((255, 255, 255), (
-                init_image.width if not first_image else 0, 0, init_image.width + (width if not first_image else 0),
+                init_image.width, 0, init_image.width + width,
                 init_image.height))
 
             quality = 0

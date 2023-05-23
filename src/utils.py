@@ -97,6 +97,7 @@ def read_image_batched(directory, filename="image") -> Image or None:
 
 
 def get_image_names(directory, input_schema=rf'^(\d+)_{"image"}\.png$') -> list[str]:
+    check_if_folder_exists(directory)
     return sorted(
         [file for file in os.listdir(directory) if re.search(input_schema, file)])
 

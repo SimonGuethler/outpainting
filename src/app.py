@@ -55,7 +55,7 @@ def prompts():
     if prompts_input is None:
         return Response(status=404)
     parse = prompts_input.split("\n")
-    prompts_return = [i.strip() for i in parse if i != ""]
+    prompts_return = [i.strip() if index % 2 == 0 else "" for index, i in enumerate(parse) if i != ""]
     return prompts_return
 
 

@@ -117,7 +117,7 @@ class Outpainting:
             else:
                 cropped_image = generated_transition.crop((width, 0, width * 2, height))
                 filename = save_image_batched(cropped_image, "outpainting", "image")
-                write_to_file('outpainting', 'prompts.txt', '\n', append=True)
+                write_to_file('outpainting', 'prompts.txt', '-\n', append=True)
                 convert_img_to_webp(f"outpainting/{filename}")
 
         # save main image

@@ -6,7 +6,7 @@ from flask_cors import CORS
 
 from src.outpainting import Outpainting
 from src.utils import check_if_file_exists, read_text, build_complete_image, get_image_names, \
-    get_image_name_for_index
+    get_image_name_for_index, check_if_folder_exists
 
 app = Flask(__name__, template_folder='../html', static_folder='../outpainting')
 CORS(app)
@@ -58,6 +58,8 @@ def images():
 
 @app.route('/data', methods=['GET'])
 def data():
+    check_if_folder_exists("outpainting")
+
     image_files = get_image_names('outpainting', input_schema=rf'^(\d+)_{"image"}\.webp$')
     prompts_input = read_text("outpainting/prompts.txt")
 
@@ -69,6 +71,9 @@ def data():
 
     base_url = request.base_url
     base_url = base_url[:base_url.rfind('/') + 1]
+
+    print(image_files, len(image_files))
+    print(prompts_return, len(prompts_return))
 
     result = []
     for i in range(len(image_files)):
@@ -106,13 +111,9 @@ def generate():
 
 @app.route('/reset', methods=['GET'])
 def reset():
-    image_files = get_image_names('outpainting')
-    for file in image_files:
-        os.remove(os.path.join('outpainting', file))
-
-    if check_if_file_exists("outpainting/image.png"):
-        os.remove("outpainting/image.png")
-    if check_if_file_exists("outpainting/prompts.txt"):
-        os.remove("outpainting/prompts.txt")
+    if os.path.exists("outpainting"):
+        for file in os.listdir("outpainting"):
+            os.remove(os.path.join("outpainting", file))
+        os.rmdir("outpainting")
 
     return Response()

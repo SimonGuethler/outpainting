@@ -6,6 +6,7 @@ from src.aesthetic_predictor import AestheticPredictor
 from src.create_prompt import create_prompt_from_news
 from src.outpainting_config import OutPaintingConfig
 from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp
+from src.utils import write_to_file
 
 
 class Outpainting:
@@ -39,7 +40,7 @@ class Outpainting:
     def generate_image(self):
         # load params
         default_prompt = self.outpainting_config.get_config("outpainting", "positive_prompt")
-        prompt = create_prompt_from_news() + ', ' + default_prompt
+        news_prompt = create_prompt_from_news()
         negative_prompt = self.outpainting_config.get_config("outpainting", "negative_prompt")
         guidance_scale = self.outpainting_config.get_config_float("outpainting", "guidance_scale") or 7.5
         guidance_scale_trans = self.outpainting_config.get_config_float("outpainting", "guidance_scale_trans") or 7.5
@@ -55,7 +56,7 @@ class Outpainting:
         while quality < quality_threshold:
             # generate image
             generated_image = self.main_pipe(
-                prompt=prompt,
+                prompt=news_prompt + ', ' + default_prompt,
                 negative_prompt=negative_prompt,
                 guidance_scale=guidance_scale,
                 num_inference_steps=num_inference_steps,
@@ -117,11 +118,13 @@ class Outpainting:
             else:
                 cropped_image = generated_transition.crop((width, 0, width * 2, height))
                 filename = save_image_batched(cropped_image, "outpainting", "image")
+                write_to_file('outpainting', 'prompts.txt', '', append=True)
                 convert_img_to_webp(f"outpainting/{filename}")
 
         # save main image
         if init_image is not None:
             filename = save_image_batched(generated_image, "outpainting", "image")
+            write_to_file('outpainting', 'prompts.txt', news_prompt, append=True)
             convert_img_to_webp(f"outpainting/{filename}")
         else:
             filename = save_image(generated_image, "outpainting", "0001_image")

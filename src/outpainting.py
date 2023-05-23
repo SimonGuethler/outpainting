@@ -5,8 +5,7 @@ from diffusers import StableDiffusionInpaintPipeline, StableDiffusionPipeline
 from src.aesthetic_predictor import AestheticPredictor
 from src.create_prompt import create_prompt_from_news
 from src.outpainting_config import OutPaintingConfig
-from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp
-from src.utils import write_to_file
+from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp, write_to_file
 
 
 class Outpainting:
@@ -118,14 +117,15 @@ class Outpainting:
             else:
                 cropped_image = generated_transition.crop((width, 0, width * 2, height))
                 filename = save_image_batched(cropped_image, "outpainting", "image")
-                write_to_file('outpainting', 'prompts.txt', '', append=True)
+                write_to_file('outpainting', 'prompts.txt', '\n', append=True)
                 convert_img_to_webp(f"outpainting/{filename}")
 
         # save main image
         if init_image is not None:
             filename = save_image_batched(generated_image, "outpainting", "image")
-            write_to_file('outpainting', 'prompts.txt', news_prompt, append=True)
+            write_to_file('outpainting', 'prompts.txt', f'{news_prompt}\n', append=True)
             convert_img_to_webp(f"outpainting/{filename}")
         else:
             filename = save_image(generated_image, "outpainting", "0001_image")
+            write_to_file('outpainting', 'prompts.txt', f'{news_prompt}\n', append=True)
             convert_img_to_webp(f"outpainting/{filename}")

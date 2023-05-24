@@ -111,9 +111,10 @@ def generate():
 
 @app.route('/reset', methods=['GET'])
 def reset():
+    generation_semaphore.acquire()
     if os.path.exists("outpainting"):
         for file in os.listdir("outpainting"):
             os.remove(os.path.join("outpainting", file))
         os.rmdir("outpainting")
-
+    generation_semaphore.release()
     return Response()

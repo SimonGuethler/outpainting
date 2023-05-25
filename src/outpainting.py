@@ -101,7 +101,7 @@ class Outpainting:
             while quality < quality_threshold:
                 # generate image
                 generated_transition = self.inpainting_pipe(
-                    prompt=trans_prompt + ', ' + default_prompt,
+                    prompt=trans_prompt,
                     negative_prompt=negative_prompt,
                     image=working_image,
                     mask_image=mask_image,

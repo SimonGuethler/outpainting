@@ -40,6 +40,7 @@ class Outpainting:
         # load params
         default_prompt = self.outpainting_config.get_config("outpainting", "positive_prompt")
         news_prompt = create_prompt_from_news()
+        trans_prompt = self.outpainting_config.get_config("outpainting", "trans_prompt")
         negative_prompt = self.outpainting_config.get_config("outpainting", "negative_prompt")
         pre_prompt = self.outpainting_config.get_config("outpainting", "pre_prompt")
         guidance_scale = self.outpainting_config.get_config_float("outpainting", "guidance_scale") or 7.5
@@ -100,7 +101,7 @@ class Outpainting:
             while quality < quality_threshold:
                 # generate image
                 generated_transition = self.inpainting_pipe(
-                    prompt=default_prompt,
+                    prompt=trans_prompt + ', ' + default_prompt,
                     negative_prompt=negative_prompt,
                     image=working_image,
                     mask_image=mask_image,

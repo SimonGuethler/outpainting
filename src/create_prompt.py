@@ -45,22 +45,25 @@ def call_nyt_api() -> str:
 
 
 def call_news_api() -> str:
-    config = configparser.ConfigParser()
-    config.read('config.ini')
-    api_key = config.get('api', 'key')
+    try:
+        config = configparser.ConfigParser()
+        config.read('config.ini')
+        api_key = config.get('api', 'key')
 
-    newsapi = NewsApiClient(api_key=api_key)
+        newsapi = NewsApiClient(api_key=api_key)
 
-    top_headlines = newsapi.get_top_headlines(language='en')
+        top_headlines = newsapi.get_top_headlines(language='en')
 
-    for article in top_headlines['articles']:
-        title = article['title']
-        title = title.rpartition(' - ')[0].strip()
-        prompt = clean_prompt(title)
+        for article in top_headlines['articles']:
+            title = article['title']
+            title = title.rpartition(' - ')[0].strip()
+            prompt = clean_prompt(title)
 
-        # return the first new result
-        if not is_in_file('outpainting', 'prompts.txt', prompt):
-            return f'{prompt}'
+            # return the first new result
+            if not is_in_file('outpainting', 'prompts.txt', prompt):
+                return f'{prompt}'
+    except:
+        return ''
 
 
 def clean_prompt(prompt) -> str:

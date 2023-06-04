@@ -2,15 +2,17 @@ FROM continuumio/anaconda3:latest
 
 # Install base utilities
 RUN apt-get update && \
-    apt-get install -y nano && \
-    apt-get autoremove && \
-    apt-get clean
+    apt-get install -y nano
 
 # Install the project
 WORKDIR /app
 
+# Copy the project
+COPY . .
+
 ## Create the environment
 RUN conda create --name outpainting python=3.10
+#RUN conda env create -f environment.yml
 
 # Make RUN commands use the new environment
 SHELL ["conda", "run", "-n", "outpainting", "/bin/bash", "-c"]
@@ -29,9 +31,6 @@ RUN pip install --upgrade flask-cors
 RUN pip install waitress
 RUN pip install open-clip-torch
 RUN pip install newsapi-python
-
-# Copy the project
-COPY . .
 
 EXPOSE 8000
 CMD bash -C 'serve.sh';'bash'

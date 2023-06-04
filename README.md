@@ -2,7 +2,17 @@
 
 > This repo consists of a pipeline to generate an infinite image from a newsfeed via stable diffusion inpainting.
 
-## Installation
+## Docker
+
+To start the docker container, run the following command
+
+```bash
+docker compose up -d
+```
+
+## Local Environment
+
+### Installation
 
 Install the Anaconda environment from the provided file
 
@@ -39,15 +49,15 @@ Add a huggingface token
 huggingface-cli login --token $HUGGINGFACE_TOKEN
 ```
 
-## Usage
+### Usage
 
-### Development
+#### Development
 
 ```bash
 python flask-dev.py
 ```
 
-### Production
+#### Production
 
 ```bash
 python serve.py

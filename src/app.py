@@ -4,8 +4,9 @@ import threading
 from flask import Flask, send_file, render_template, Response, request
 from flask_cors import CORS
 
+from src.database import Database
 from src.outpainting import Outpainting
-from src.utils import check_if_file_exists, read_text, build_complete_image, get_image_names, \
+from src.utils import check_if_file_exists, build_complete_image, get_image_names, \
     get_image_name_for_index, check_if_folder_exists
 
 app = Flask(__name__, template_folder='../html', static_folder='../outpainting')
@@ -60,24 +61,24 @@ def images():
 def data():
     check_if_folder_exists("outpainting")
 
-    image_files = get_image_names('outpainting', input_schema=rf'^(\d+)_{"image"}\.webp$')
-    prompts_input = read_text("outpainting/prompts.txt")
+    db = Database()
+    db_entries = db.get_all_entries()
+    db.close_connection()
 
-    if prompts_input is None:
+    if len(db_entries) == 0:
         return Response(status=404)
-
-    parse = prompts_input.split("\n")
-    prompts_return = [i.strip() for i in parse if i != ""]
 
     base_url = request.base_url
     base_url = base_url[:base_url.rfind('/') + 1]
 
-    print(image_files, len(image_files))
-    print(prompts_return, len(prompts_return))
-
     result = []
-    for i in range(len(image_files)):
-        result.append({"image": base_url + 'outpainting/' + image_files[i], "prompt": prompts_return[i]})
+    for entry in db_entries:
+        result.append({
+            "image": base_url + 'outpainting/' + entry[4] + '.webp',
+            "prompt": entry[1].strip(),
+            "source": entry[3].strip(),
+            "date": entry[2].strip()
+        })
 
     return result
 
@@ -90,11 +91,14 @@ def image_count():
 
 @app.route('/prompts', methods=['GET'])
 def prompts():
-    prompts_input = read_text("outpainting/prompts.txt")
-    if prompts_input is None:
+    db = Database()
+    db_entries = db.get_all_entries()
+    db.close_connection()
+
+    if len(db_entries) == 0:
         return Response(status=404)
-    parse = prompts_input.split("\n")
-    prompts_return = [i.strip() for i in parse if i != ""]
+
+    prompts_return = [i[1].strip() for i in db_entries if i != ""]
     return prompts_return
 
 
@@ -112,9 +116,15 @@ def generate():
 @app.route('/reset', methods=['GET'])
 def reset():
     generation_semaphore.acquire()
+
     if os.path.exists("outpainting"):
         for file in os.listdir("outpainting"):
             os.remove(os.path.join("outpainting", file))
         os.rmdir("outpainting")
+
+    db = Database()
+    db.delete_all_entries()
+    db.close_connection()
+
     generation_semaphore.release()
     return Response()

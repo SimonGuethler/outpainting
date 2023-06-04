@@ -3,20 +3,18 @@ import re
 from datetime import datetime
 
 import requests
-
-from src.utils import is_in_file
 from newsapi import NewsApiClient
 
-# from pytrends.request import TrendReq
+from src.utils import get_first_new_prompt
 
 
 def create_prompt_from_news() -> str:
     # main api
     prompt = call_nyt_api()
-    if prompt == '' or prompt == None:
+    if prompt == '' or prompt is None:
         # backup api
         prompt = call_news_api()
-        if prompt == '' or prompt == None:
+        if prompt == '' or prompt is None:
             return '-'
     return prompt
 
@@ -35,10 +33,8 @@ def call_nyt_api() -> str:
             for key, value in article.items():
                 if value and key == 'title':
                     prompt = clean_prompt(value)
-
                     # return the first new result
-                    if not is_in_file('outpainting', 'prompts.txt', prompt):
-                        return f'{prompt}'
+                    return get_first_new_prompt(prompt)
     else:
         print(f'Request failed with status code: {response.status_code}')
     return ''
@@ -58,10 +54,8 @@ def call_news_api() -> str:
             title = article['title']
             title = title.rpartition(' - ')[0].strip()
             prompt = clean_prompt(title)
-
             # return the first new result
-            if not is_in_file('outpainting', 'prompts.txt', prompt):
-                return f'{prompt}'
+            return get_first_new_prompt(prompt)
     except:
         return ''
 
@@ -86,7 +80,6 @@ def create_prompt_from_history():
         return (text)
     else:
         print(f'Request failed with status code: {response.status_code}')
-
 
 # def create_prompt_from_trends():
 #     pytrends = TrendReq(hl='en-US', tz=360)

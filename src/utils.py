@@ -1,7 +1,10 @@
 import os
 import re
+from datetime import datetime
 
 from PIL import Image
+
+from src.database import Database
 
 ROOT_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
@@ -174,3 +177,16 @@ def convert_img_to_webp(input_path, quality=80):
     image = Image.open(input_path)
     output_path = input_path.split(".")[0] + ".webp"
     image.save(output_path, "WebP", quality=quality)
+
+
+def get_timestamp() -> str:
+    return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+
+def get_first_new_prompt(prompt) -> str:
+    db = Database()
+    db_entries = db.get_all_entries()
+    db.close_connection()
+    for entry in db_entries:
+        if not entry[1] == prompt:
+            return f'{prompt}'

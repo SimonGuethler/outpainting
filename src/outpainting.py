@@ -4,8 +4,9 @@ from diffusers import StableDiffusionInpaintPipeline, StableDiffusionPipeline
 
 from src.aesthetic_predictor import AestheticPredictor
 from src.create_prompt import create_prompt_from_news
+from src.database import Database
 from src.outpainting_config import OutPaintingConfig
-from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp, write_to_file
+from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp, get_timestamp
 
 
 class Outpainting:
@@ -18,7 +19,8 @@ class Outpainting:
             self.aesthetic_predictor = AestheticPredictor()
 
             # init inpainting model/pipe
-            inpainting_model = self.outpainting_config.get_config("outpainting", "inpainting_model") or "runwayml/stable-diffusion-inpainting"
+            inpainting_model = self.outpainting_config.get_config("outpainting",
+                                                                  "inpainting_model") or "runwayml/stable-diffusion-inpainting"
             self.inpainting_pipe = StableDiffusionInpaintPipeline.from_pretrained(
                 inpainting_model,
                 revision="fp16",
@@ -27,14 +29,14 @@ class Outpainting:
             self.inpainting_pipe.to("cuda")
 
             # init main model/pipe
-            main_model = self.outpainting_config.get_config("outpainting", "main_model") or "runwayml/stable-diffusion-v1-5"
+            main_model = self.outpainting_config.get_config("outpainting",
+                                                            "main_model") or "runwayml/stable-diffusion-v1-5"
             self.main_pipe = StableDiffusionPipeline.from_pretrained(
                 main_model,
                 revision="fp16",
                 torch_dtype=torch.float16
             )
             self.main_pipe.to("cuda")
-
 
     def generate_image(self):
         # load params
@@ -67,6 +69,7 @@ class Outpainting:
 
             # check quality
             quality = self.aesthetic_predictor.eval_image(generated_image)
+            print("Quality: " + str(quality))
             quality_threshold -= quality_step
 
         # generate transition
@@ -82,14 +85,16 @@ class Outpainting:
 
             # create working image
             working_image = PIL.Image.new(init_image.mode,
-                                        (init_image.width + 2 * width, init_image.height),
-                                        (0, 0, 0))
-            working_image.paste(init_image, (0, 0, init_image.width, init_image.height))    # left image
-            working_image.paste(generated_image, (init_image.width + width, 0, init_image.width + width + generated_image.width, generated_image.height))    # right image
+                                          (init_image.width + 2 * width, init_image.height),
+                                          (0, 0, 0))
+            working_image.paste(init_image, (0, 0, init_image.width, init_image.height))  # left image
+            working_image.paste(generated_image, (
+                init_image.width + width, 0, init_image.width + width + generated_image.width,
+                generated_image.height))  # right image
 
             # create mask image
             mask_image = PIL.Image.new("RGB", (init_image.width + 2 * width, init_image.height),
-                                    (0, 0, 0))
+                                       (0, 0, 0))
             mask_image.paste((255, 255, 255), (
                 init_image.width, 0, init_image.width + width,
                 init_image.height))
@@ -117,15 +122,22 @@ class Outpainting:
             else:
                 cropped_image = generated_transition.crop((width, 0, width * 2, height))
                 filename = save_image_batched(cropped_image, "outpainting", "image")
-                write_to_file('outpainting', 'prompts.txt', '-\n', append=True)
                 convert_img_to_webp(f"outpainting/{filename}")
+
+                db = Database()
+                timestamp = get_timestamp()
+                db.add_entry('-', timestamp, 'NYT', filename.split(".")[0])
+                db.close_connection()
 
         # save main image
         if init_image is not None:
             filename = save_image_batched(generated_image, "outpainting", "image")
-            write_to_file('outpainting', 'prompts.txt', f'{news_prompt}\n', append=True)
             convert_img_to_webp(f"outpainting/{filename}")
         else:
             filename = save_image(generated_image, "outpainting", "0001_image")
-            write_to_file('outpainting', 'prompts.txt', f'{news_prompt}\n', append=True)
             convert_img_to_webp(f"outpainting/{filename}")
+
+        db = Database()
+        timestamp = get_timestamp()
+        db.add_entry(news_prompt, timestamp, 'NYT', filename.split(".")[0])
+        db.close_connection()

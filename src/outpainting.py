@@ -126,7 +126,7 @@ class Outpainting:
 
                 db = Database()
                 timestamp = get_timestamp()
-                db.add_entry('-', timestamp, 'NYT', filename.split(".")[0])
+                db.add_entry('-', 'NYT', filename.split(".")[0], timestamp)
                 db.close_connection()
 
         # save main image
@@ -139,5 +139,5 @@ class Outpainting:
 
         db = Database()
         timestamp = get_timestamp()
-        db.add_entry(news_prompt, timestamp, 'NYT', filename.split(".")[0])
+        db.add_entry(news_prompt, 'NYT', filename.split(".")[0], timestamp)
         db.close_connection()

@@ -6,8 +6,7 @@ from flask_cors import CORS
 
 from src.database import Database
 from src.outpainting import Outpainting
-from src.utils import check_if_file_exists, build_complete_image, get_image_names, \
-    get_image_name_for_index, check_if_folder_exists
+from src.utils import check_if_file_exists, build_complete_image, get_image_names, check_if_folder_exists
 
 app = Flask(__name__, template_folder='../html', static_folder='../outpainting')
 CORS(app)
@@ -32,7 +31,14 @@ def download():
 def image():
     img_index = request.args.get('img', default=0, type=int)
 
-    image_filename = get_image_name_for_index('outpainting', img_index, input_schema=rf'^(\d+)_{"image"}\.webp$')
+    db = Database()
+    db_entry = db.get_entry_by_id(img_index)
+    db.close_connection()
+
+    if not db_entry:
+        return Response(status=404)
+
+    image_filename = db_entry.image + '.webp',
 
     if not image_filename:
         return Response(status=404)
@@ -74,10 +80,10 @@ def data():
     result = []
     for entry in db_entries:
         result.append({
-            "image": base_url + 'outpainting/' + entry[4] + '.webp',
-            "prompt": entry[1].strip(),
-            "source": entry[3].strip(),
-            "date": entry[2].strip()
+            "image": base_url + 'outpainting/' + entry.image + '.webp',
+            "prompt": entry.prompt.strip(),
+            "source": entry.source.strip(),
+            "date": entry.date.strip()
         })
 
     return result
@@ -98,7 +104,7 @@ def prompts():
     if len(db_entries) == 0:
         return Response(status=404)
 
-    prompts_return = [i[1].strip() for i in db_entries if i != ""]
+    prompts_return = [i.prompt.strip() for i in db_entries if i != ""]
     return prompts_return
 
 

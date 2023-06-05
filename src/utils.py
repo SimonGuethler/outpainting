@@ -187,6 +187,10 @@ def get_first_new_prompt(prompt) -> str:
     db = Database()
     db_entries = db.get_all_entries()
     db.close_connection()
+
+    if len(db_entries) == 0:
+        return f'{prompt}'
+
     for entry in db_entries:
-        if not entry[1] == prompt:
+        if not entry.prompt == prompt:
             return f'{prompt}'

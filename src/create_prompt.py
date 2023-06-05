@@ -28,13 +28,8 @@ def call_nyt_api() -> str:
     response = requests.get(api_url)
     if response.status_code == 200:
         data = response.json()
-
-        for _, article in enumerate(data['results'], start=1):
-            for key, value in article.items():
-                if value and key == 'title':
-                    prompt = clean_prompt(value)
-                    # return the first new result
-                    return get_first_new_prompt(prompt)
+        prompts = [clean_prompt(article['title']) for article in data['results']]
+        return get_first_new_prompt(prompts)
     else:
         print(f'Request failed with status code: {response.status_code}')
     return ''
@@ -50,12 +45,8 @@ def call_news_api() -> str:
 
         top_headlines = newsapi.get_top_headlines(language='en')
 
-        for article in top_headlines['articles']:
-            title = article['title']
-            title = title.rpartition(' - ')[0].strip()
-            prompt = clean_prompt(title)
-            # return the first new result
-            return get_first_new_prompt(prompt)
+        prompts = [clean_prompt(article['title'].rpartition(' - ')[0].strip()) for article in top_headlines['articles']]
+        return get_first_new_prompt(prompts)
     except:
         return ''
 

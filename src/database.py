@@ -28,7 +28,7 @@ class Database:
         ''')
 
     def add_entry(self, prompt: str, source: str, image: str, date: str) -> None:
-        print(f"Adding entry: {prompt}, {date}, {source}, {image}")
+        print(f"Adding entry: {prompt}, {source}, {image}, {date}")
         self.conn.execute('''
             INSERT INTO entries (prompt, source, image, date)
             VALUES (?, ?, ?, ?)

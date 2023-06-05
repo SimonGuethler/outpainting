@@ -69,7 +69,7 @@ class Outpainting:
 
             # check quality
             quality = self.aesthetic_predictor.eval_image(generated_image)
-            print("Quality: " + str(quality))
+            print("Quality: " + str(int(quality)))
             quality_threshold -= quality_step
 
         # generate transition

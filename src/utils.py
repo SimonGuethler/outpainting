@@ -183,14 +183,17 @@ def get_timestamp() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_first_new_prompt(prompt) -> str:
+def get_first_new_prompt(prompts: list[str]) -> str:
+    if len(prompts) == 0:
+        return ""
+
     db = Database()
     db_entries = db.get_all_entries()
     db.close_connection()
 
     if len(db_entries) == 0:
-        return f'{prompt}'
+        return f'{prompts[0]}'
 
-    for entry in db_entries:
-        if not entry.prompt == prompt:
+    for prompt in prompts:
+        if prompt not in [e.prompt for e in db_entries]:
             return f'{prompt}'

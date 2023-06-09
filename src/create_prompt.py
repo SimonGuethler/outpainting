@@ -29,6 +29,9 @@ def call_nyt_api() -> str:
     if response.status_code == 200:
         data = response.json()
         prompts = [clean_prompt(article['title']) for article in data['results']]
+        headlines = [article['title'] for article in data['results']]
+        sources = [article['source'] for article in data['results']]
+        dates = [article['published_date'] for article in data['results']]
         return get_first_new_prompt(prompts)
     else:
         print(f'Request failed with status code: {response.status_code}')
@@ -46,6 +49,9 @@ def call_news_api() -> str:
         top_headlines = newsapi.get_top_headlines(language='en')
 
         prompts = [clean_prompt(article['title'].rpartition(' - ')[0].strip()) for article in top_headlines['articles']]
+        headlines = [article['title'].rpartition(' - ')[0].strip() for article in top_headlines['articles']]
+        sources = [article['title'].rpartition(' - ')[2].strip() for article in top_headlines['articles']]
+        dates = [article['publishedAt'] for article in top_headlines['articles']]
         return get_first_new_prompt(prompts)
     except:
         return ''

@@ -183,8 +183,8 @@ def get_timestamp() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_first_new_prompt(prompts: list[str]) -> str:
-    if len(prompts) == 0:
+def get_first_new_prompt(data: dict) -> str:
+    if len(data['prompts']) == 0:
         return ""
 
     db = Database()
@@ -192,8 +192,10 @@ def get_first_new_prompt(prompts: list[str]) -> str:
     db.close_connection()
 
     if len(db_entries) == 0:
-        return f'{prompts[0]}'
+        return data['prompts'][0], data['headlines'][0], data['sources'][0], data['dates'][0]
 
-    for prompt in prompts:
+    for i, prompt in enumerate(data['prompts']):
         if prompt not in [e.prompt for e in db_entries]:
-            return f'{prompt}'
+            return data['prompts'][i], data['headlines'][i], data['sources'][i], data['dates'][i]
+
+    return '', '', '', ''

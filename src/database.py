@@ -12,6 +12,7 @@ class Entry:
     source: str
     image: str
     date: str
+    headline: str
 
 
 class Database:
@@ -23,16 +24,17 @@ class Database:
                 prompt TEXT,
                 source TEXT,
                 image TEXT,
-                date TEXT
+                date TEXT,
+                headline TEXT
             )
         ''')
 
-    def add_entry(self, prompt: str, source: str, image: str, date: str) -> None:
-        print(f"Adding entry: {prompt}, {source}, {image}, {date}")
+    def add_entry(self, prompt: str, source: str, image: str, date: str, headline: str) -> None:
+        print(f"Adding entry: {prompt}, {source}, {image}, {date}, {headline}")
         self.conn.execute('''
-            INSERT INTO entries (prompt, source, image, date)
+            INSERT INTO entries (prompt, source, image, date, headline)
             VALUES (?, ?, ?, ?)
-        ''', (prompt, source, image, date))
+        ''', (prompt, source, image, date, headline))
         self.conn.commit()
 
     def get_all_entries(self) -> List[Entry]:
@@ -40,7 +42,7 @@ class Database:
         rows = cursor.fetchall()
         entries = []
         for row in rows:
-            entry = Entry(id=row[0], prompt=row[1], source=row[2], image=row[3], date=row[4])
+            entry = Entry(id=row[0], prompt=row[1], source=row[2], image=row[3], date=row[4], headline=row[5])
             entries.append(entry)
         return entries
 
@@ -49,7 +51,7 @@ class Database:
         entry = cursor.fetchone()
         if entry is None:
             return None
-        return Entry(id=entry[0], prompt=entry[1], source=entry[2], image=entry[3], date=entry[4])
+        return Entry(id=entry[0], prompt=entry[1], source=entry[2], image=entry[3], date=entry[4], headline=entry[5])
 
     def delete_all_entries(self) -> None:
         self.conn.execute('DELETE FROM entries')

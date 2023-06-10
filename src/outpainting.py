@@ -41,7 +41,7 @@ class Outpainting:
     def generate_image(self):
         # load params
         default_prompt = self.outpainting_config.get_config("outpainting", "positive_prompt")
-        news_prompt = create_prompt_from_news()
+        news_prompt, news_headline, news_source, news_date = create_prompt_from_news()
         trans_prompt = self.outpainting_config.get_config("outpainting", "trans_prompt")
         negative_prompt = self.outpainting_config.get_config("outpainting", "negative_prompt")
         pre_prompt = self.outpainting_config.get_config("outpainting", "pre_prompt")
@@ -125,8 +125,7 @@ class Outpainting:
                 convert_img_to_webp(f"outpainting/{filename}")
 
                 db = Database()
-                timestamp = get_timestamp()
-                db.add_entry('-', 'NYT', filename.split(".")[0], timestamp)
+                db.add_entry('-', '-', filename.split(".")[0], '-', '-')
                 db.close_connection()
 
         # save main image
@@ -138,6 +137,5 @@ class Outpainting:
             convert_img_to_webp(f"outpainting/{filename}")
 
         db = Database()
-        timestamp = get_timestamp()
-        db.add_entry(news_prompt, 'NYT', filename.split(".")[0], timestamp)
+        db.add_entry(news_prompt, news_source, filename.split(".")[0], news_date, news_headline)
         db.close_connection()

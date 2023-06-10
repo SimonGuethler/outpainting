@@ -8,15 +8,15 @@ from newsapi import NewsApiClient
 from src.utils import get_first_new_prompt
 
 
-def create_prompt_from_news() -> str:
+def create_prompt_from_news() -> tuple:
     # main api
-    prompt = call_nyt_api()
+    prompt, headline, source, date = call_nyt_api()
     if prompt == '' or prompt is None:
         # backup api
-        prompt = call_news_api()
+        prompt, headline, source, date = call_news_api()
         if prompt == '' or prompt is None:
-            return '-'
-    return prompt
+            return '-', '-', '-', '-'
+    return prompt, headline, source, date
 
 
 def call_nyt_api() -> str:
@@ -28,14 +28,16 @@ def call_nyt_api() -> str:
     response = requests.get(api_url)
     if response.status_code == 200:
         data = response.json()
-        prompts = [clean_prompt(article['title']) for article in data['results']]
-        headlines = [article['title'] for article in data['results']]
-        sources = [article['source'] for article in data['results']]
-        dates = [article['published_date'] for article in data['results']]
-        return get_first_new_prompt(prompts)
+        news_data = {
+            'prompts': [clean_prompt(article['title']) for article in data['results']],
+            'headlines': [article['title'] for article in data['results']],
+            'sources': [article['source'] for article in data['results']],
+            'dates': [article['published_date'] for article in data['results']],
+        }
+        return get_first_new_prompt(news_data)
     else:
         print(f'Request failed with status code: {response.status_code}')
-    return ''
+    return '', '', '', ''
 
 
 def call_news_api() -> str:
@@ -48,13 +50,15 @@ def call_news_api() -> str:
 
         top_headlines = newsapi.get_top_headlines(language='en')
 
-        prompts = [clean_prompt(article['title'].rpartition(' - ')[0].strip()) for article in top_headlines['articles']]
-        headlines = [article['title'].rpartition(' - ')[0].strip() for article in top_headlines['articles']]
-        sources = [article['title'].rpartition(' - ')[2].strip() for article in top_headlines['articles']]
-        dates = [article['publishedAt'] for article in top_headlines['articles']]
-        return get_first_new_prompt(prompts)
+        news_data = {
+            'prompts': [clean_prompt(article['title'].rpartition(' - ')[0].strip()) for article in top_headlines['articles']],
+            'headlines': [article['title'].rpartition(' - ')[0].strip() for article in top_headlines['articles']],
+            'sources': [article['title'].rpartition(' - ')[2].strip() for article in top_headlines['articles']],
+            'dates': [article['publishedAt'] for article in top_headlines['articles']],
+        }
+        return get_first_new_prompt(news_data)
     except:
-        return ''
+        return '', '', '', ''
 
 
 def clean_prompt(prompt) -> str:

@@ -1,7 +1,9 @@
+import os
 import sqlite3
 from dataclasses import dataclass
 from typing import List, Optional
 
+DB_FOLDER = 'outpainting'
 DB_FILE = 'sqlite.db'
 
 
@@ -17,7 +19,8 @@ class Entry:
 
 class Database:
     def __init__(self):
-        self.conn = sqlite3.connect(DB_FILE)
+        os.makedirs(DB_FOLDER, exist_ok=True)
+        self.conn = sqlite3.connect(os.path.join(DB_FOLDER, DB_FILE))
         self.conn.execute('''
             CREATE TABLE IF NOT EXISTS entries (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,

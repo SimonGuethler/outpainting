@@ -124,14 +124,14 @@ def generate():
 def reset():
     generation_semaphore.acquire()
 
+    # db = Database()
+    # db.delete_all_entries()
+    # db.close_connection()
+
     if os.path.exists("outpainting"):
         for file in os.listdir("outpainting"):
             os.remove(os.path.join("outpainting", file))
         os.rmdir("outpainting")
-
-    db = Database()
-    db.delete_all_entries()
-    db.close_connection()
 
     generation_semaphore.release()
     return Response()

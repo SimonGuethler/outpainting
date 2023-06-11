@@ -82,6 +82,7 @@ def data():
         result.append({
             "image": base_url + 'outpainting/' + entry.image + '.webp',
             "prompt": entry.prompt.strip(),
+            "headline": entry.headline.strip(),
             "source": entry.source.strip(),
             "date": entry.date.strip()
         })

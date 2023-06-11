@@ -33,7 +33,7 @@ class Database:
         print(f"Adding entry: {prompt}, {source}, {image}, {date}, {headline}")
         self.conn.execute('''
             INSERT INTO entries (prompt, source, image, date, headline)
-            VALUES (?, ?, ?, ?)
+            VALUES (?, ?, ?, ?, ?)
         ''', (prompt, source, image, date, headline))
         self.conn.commit()
 

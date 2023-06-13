@@ -39,6 +39,4 @@ zip_path = 'export/export.zip'
 
 zip_folder(folder_path, zip_path)
 
-reset_folder("outpainting")
-
 print("Done")

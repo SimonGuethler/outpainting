@@ -6,7 +6,7 @@ from src.aesthetic_predictor import AestheticPredictor
 from src.create_prompt import create_prompt_from_news
 from src.database import Database
 from src.outpainting_config import OutPaintingConfig
-from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp, get_timestamp
+from src.utils import save_image, read_image_batched, save_image_batched, convert_img_to_webp
 
 
 class Outpainting:
@@ -38,16 +38,20 @@ class Outpainting:
             )
             self.main_pipe.to("cuda")
 
-    def generate_image(self):
+    def generate_image(self, news_prompt: str = '', news_headline: str = '', news_source: str = '',
+                       news_date: str = ''):
         # load params
         default_prompt = self.outpainting_config.get_config("outpainting", "positive_prompt")
-        news_prompt, news_headline, news_source, news_date = create_prompt_from_news()
+
+        if news_prompt == '' or news_headline == '' or news_source == '' or news_date == '':
+            news_prompt, news_headline, news_source, news_date = create_prompt_from_news()
+
         trans_prompt = self.outpainting_config.get_config("outpainting", "trans_prompt")
         negative_prompt = self.outpainting_config.get_config("outpainting", "negative_prompt")
         pre_prompt = self.outpainting_config.get_config("outpainting", "pre_prompt")
         guidance_scale = self.outpainting_config.get_config_float("outpainting", "guidance_scale") or 7.5
         guidance_scale_trans = self.outpainting_config.get_config_float("outpainting", "guidance_scale_trans") or 7.5
-        num_inference_steps = self.outpainting_config.get_config_int("outpainting", "num_inference_steps") or 10
+        num_inference_steps = self.outpainting_config.get_config_int("outpainting", "num_inference_steps") or 30
         height = self.outpainting_config.get_config_int("outpainting", "height") or 512
         width = self.outpainting_config.get_config_int("outpainting", "width") or 512
 

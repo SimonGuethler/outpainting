@@ -1,4 +1,3 @@
-import os
 import threading
 
 from flask import Flask, send_file, render_template, Response, request
@@ -6,7 +5,7 @@ from flask_cors import CORS
 
 from src.database import Database
 from src.outpainting import Outpainting
-from src.utils import check_if_file_exists, build_complete_image, get_image_names, check_if_folder_exists
+from src.utils import check_if_file_exists, build_complete_image, get_image_names, check_if_folder_exists, reset_folder
 
 app = Flask(__name__, template_folder='../html', static_folder='../outpainting')
 CORS(app)
@@ -123,15 +122,6 @@ def generate():
 @app.route('/reset', methods=['GET'])
 def reset():
     generation_semaphore.acquire()
-
-    # db = Database()
-    # db.delete_all_entries()
-    # db.close_connection()
-
-    if os.path.exists("outpainting"):
-        for file in os.listdir("outpainting"):
-            os.remove(os.path.join("outpainting", file))
-        os.rmdir("outpainting")
-
+    reset_folder("outpainting")
     generation_semaphore.release()
     return Response()

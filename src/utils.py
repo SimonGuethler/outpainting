@@ -1,6 +1,9 @@
 import os
 import re
+import shutil
+import zipfile
 from datetime import datetime
+from typing import Any
 
 from PIL import Image
 
@@ -150,10 +153,9 @@ def get_image_name_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"
     return image_files[index]
 
 
-def get_image_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$',
-                        image_extension='.png') -> Image or None:
+def get_image_for_index(directory, index=0, input_schema=rf'^(\d+)_{"image"}\.png$') -> Image or None:
     complete_path: str = os.path.join(ROOT_DIR, directory)
-    image_path = get_image_path_for_index(complete_path, index, input_schema, image_extension)
+    image_path = get_image_path_for_index(complete_path, index, input_schema)
     if image_path is None:
         return None
     return Image.open(image_path)
@@ -182,9 +184,9 @@ def get_timestamp() -> str:
     return datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
 
-def get_first_new_prompt(data: dict) -> str:
+def get_first_new_prompt(data: dict) -> tuple[Any, Any, Any, Any] | tuple[str, str, str, str]:
     if len(data['prompts']) == 0:
-        return ""
+        return '', '', '', ''
 
     db = Database()
     db_entries = db.get_all_entries()
@@ -198,3 +200,32 @@ def get_first_new_prompt(data: dict) -> str:
             return data['prompts'][i], data['headlines'][i], data['sources'][i], data['dates'][i]
 
     return '', '', '', ''
+
+
+def get_incremented_filename(filepath: str) -> str:
+    base, ext = os.path.splitext(filepath)
+    counter = 1
+
+    while os.path.exists(f"{base}_{counter}{ext}"):
+        counter += 1
+
+    return f"{base}_{counter}{ext}"
+
+
+def zip_folder(folder_path: str, zip_path: str):
+    zip_path = get_incremented_filename(zip_path)
+    zip_directory = os.path.dirname(zip_path)
+
+    if not os.path.exists(zip_directory):
+        os.makedirs(zip_directory)
+
+    with zipfile.ZipFile(zip_path, 'w', zipfile.ZIP_DEFLATED) as zip_file:
+        for root, _, files in os.walk(folder_path):
+            for file in files:
+                file_path = os.path.join(root, file)
+                zip_file.write(file_path, os.path.relpath(file_path, folder_path))
+
+
+def reset_folder(folder_path: str):
+    if os.path.exists(folder_path):
+        shutil.rmtree(folder_path)

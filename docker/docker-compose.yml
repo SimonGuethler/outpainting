@@ -1,0 +1,25 @@
+version: "3"
+name: stsiguet
+
+services:
+  outpainting-app:
+    build: ./outpainting-app
+    ports:
+      - "8080:8080"
+    container_name: stsiguet-outpainting-app
+  outpainting-api:
+    build: ./outpainting
+    ports:
+      - "8000:8000"
+    container_name: stsiguet-outpainting-api
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              device_ids: [ '0' ]
+              capabilities: [ gpu ]
+    volumes:
+      - ./.cache:/root/.cache
+      - ./_output:/app/outpainting
+      - ./_export:/app/export

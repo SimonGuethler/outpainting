@@ -1,6 +1,10 @@
 /images
 /inpainting
 /outpainting
+/output
+/input
+/export
+/docker
 Dockerfile
 docker-compose.yml
 .dockerignore

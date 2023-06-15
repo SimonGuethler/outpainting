@@ -32,3 +32,4 @@ RUN pip install newsapi-python
 COPY . .
 
 ENTRYPOINT ["python", "generate.py"]
+#ENTRYPOINT ["tail", "-f", "/dev/null"]

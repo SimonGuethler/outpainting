@@ -229,3 +229,10 @@ def zip_folder(folder_path: str, zip_path: str):
 def reset_folder(folder_path: str):
     if os.path.exists(folder_path):
         shutil.rmtree(folder_path)
+
+
+def clean_prompt(prompt) -> str:
+    prompt_clean = re.sub(r'[^a-zA-Z0-9\s]', '', f'{prompt}')  # remove special characters
+    prompt_clean = ' '.join(prompt_clean.split())  # remove duplicate white spaces
+    # prompt_clean = re.sub(r'\s*,\s*', ', ', prompt_clean)  # create clean commas
+    return prompt_clean

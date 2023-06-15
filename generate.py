@@ -1,8 +1,7 @@
 import json
 
-from src.create_prompt import clean_prompt
 from src.outpainting import Outpainting
-from src.utils import zip_folder, reset_folder
+from src.utils import zip_folder, reset_folder, clean_prompt
 
 reset_folder("outpainting")
 

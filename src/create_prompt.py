@@ -1,11 +1,10 @@
 import configparser
-import re
 from datetime import datetime
 
 import requests
 from newsapi import NewsApiClient
 
-from src.utils import get_first_new_prompt
+from src.utils import get_first_new_prompt, clean_prompt
 
 
 def create_prompt_from_news() -> tuple[str, str, str, str]:
@@ -60,13 +59,6 @@ def call_news_api() -> tuple[str, str, str, str]:
         return get_first_new_prompt(news_data)
     except:
         return '', '', '', ''
-
-
-def clean_prompt(prompt) -> str:
-    prompt_clean = re.sub(r'[^a-zA-Z0-9\s]', '', f'{prompt}')  # remove special characters
-    prompt_clean = ' '.join(prompt_clean.split())  # remove duplicate white spaces
-    # prompt_clean = re.sub(r'\s*,\s*', ', ', prompt_clean)  # create clean commas
-    return prompt_clean
 
 
 def create_prompt_from_history():

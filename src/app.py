@@ -122,6 +122,12 @@ def generate():
 @app.route('/reset', methods=['GET'])
 def reset():
     generation_semaphore.acquire()
+
+    db = Database()
+    db.delete_all_entries()
+    db.close_connection()
+
     reset_folder("outpainting")
+
     generation_semaphore.release()
     return Response()

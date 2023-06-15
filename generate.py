@@ -1,5 +1,6 @@
 import json
 
+from src.create_prompt import clean_prompt
 from src.outpainting import Outpainting
 from src.utils import zip_folder, reset_folder
 
@@ -16,11 +17,13 @@ parsed_data = []
 
 for entry in data:
     prompt = entry['prompt']
+    headline = entry['headline']
     source = entry['source']
     date = entry['date']
 
     parsed_entry = {
         'prompt': prompt,
+        'headline': headline,
         'source': source,
         'date': date
     }
@@ -32,7 +35,7 @@ if parsed_data is None:
 
 outpainting = Outpainting()
 for entry in parsed_data:
-    outpainting.generate_image(entry['prompt'], entry['prompt'], entry['source'], entry['date'])
+    outpainting.generate_image(clean_prompt(entry['prompt']), entry['headline'], entry['source'], entry['date'])
 
 folder_path = 'outpainting'
 zip_path = 'export/export.zip'

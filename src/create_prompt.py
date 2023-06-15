@@ -8,7 +8,7 @@ from newsapi import NewsApiClient
 from src.utils import get_first_new_prompt
 
 
-def create_prompt_from_news() -> tuple:
+def create_prompt_from_news() -> tuple[str, str, str, str]:
     # main api
     prompt, headline, source, date = call_nyt_api()
     if prompt == '' or prompt is None:
@@ -19,7 +19,7 @@ def create_prompt_from_news() -> tuple:
     return prompt, headline, source, date
 
 
-def call_nyt_api() -> str:
+def call_nyt_api() -> tuple[str, str, str, str]:
     config = configparser.ConfigParser()
     config.read('config.ini')
     api_key = config.get('api', 'key_nyt')
@@ -40,7 +40,7 @@ def call_nyt_api() -> str:
     return '', '', '', ''
 
 
-def call_news_api() -> str:
+def call_news_api() -> tuple[str, str, str, str]:
     try:
         config = configparser.ConfigParser()
         config.read('config.ini')
@@ -51,7 +51,8 @@ def call_news_api() -> str:
         top_headlines = newsapi.get_top_headlines(language='en')
 
         news_data = {
-            'prompts': [clean_prompt(article['title'].rpartition(' - ')[0].strip()) for article in top_headlines['articles']],
+            'prompts': [clean_prompt(article['title'].rpartition(' - ')[0].strip()) for article in
+                        top_headlines['articles']],
             'headlines': [article['title'].rpartition(' - ')[0].strip() for article in top_headlines['articles']],
             'sources': [article['title'].rpartition(' - ')[2].strip() for article in top_headlines['articles']],
             'dates': [article['publishedAt'] for article in top_headlines['articles']],

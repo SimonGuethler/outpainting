@@ -1,9 +1,7 @@
 import json
 
 from src.outpainting import Outpainting
-from src.utils import zip_folder, reset_folder, clean_prompt
-
-reset_folder("outpainting")
+from src.utils import zip_folder, clean_prompt
 
 with open('input/prompts.json', 'r') as json_file:
     data = json.load(json_file)

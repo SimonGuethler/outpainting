@@ -122,6 +122,7 @@ class Outpainting:
 
                 # check quality
                 quality = self.aesthetic_predictor.eval_image(generated_transition)
+                print("Quality: " + str(float(quality)))
                 quality_threshold -= quality_step
             else:
                 cropped_image = generated_transition.crop((width, 0, width * 2, height))

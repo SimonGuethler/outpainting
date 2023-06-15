@@ -43,7 +43,7 @@ class Outpainting:
         # load params
         default_prompt = self.outpainting_config.get_config("outpainting", "positive_prompt")
 
-        if news_prompt == '' or news_headline == '' or news_source == '' or news_date == '':
+        if news_prompt == '':
             news_prompt, news_headline, news_source, news_date = create_prompt_from_news()
 
         trans_prompt = self.outpainting_config.get_config("outpainting", "trans_prompt")

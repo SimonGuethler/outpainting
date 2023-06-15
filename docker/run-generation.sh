@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Build the Docker image
-docker build -t outpainting-generate -f ./outpainting/Dockerfile_Generate ./outpainting
+docker build -t stsiguet-outpainting-generate -f ./outpainting/Dockerfile_Generate ./outpainting
 
 # Run the Docker container
 docker run -d --rm --name stsiguet-outpainting-generate \
@@ -10,4 +10,4 @@ docker run -d --rm --name stsiguet-outpainting-generate \
   -v "$(pwd)/_output:/app/outpainting" \
   -v "$(pwd)/_export:/app/export" \
   -v "$(pwd)/_input:/app/input" \
-  outpainting-generate
+  stsiguet-outpainting-generate

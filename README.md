@@ -1,7 +1,7 @@
 # Project Outpainting
 
 > This repo consists of a pipeline to generate an infinite image from a newsfeed via stable diffusion inpainting.
-
+>
 > There's also a frontend app to showcase the
 > results [Outpainting App](https://github.com/SimonGuethler/outpainting-app).
 

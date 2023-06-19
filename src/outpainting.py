@@ -18,6 +18,8 @@ class Outpainting:
             self.outpainting_config = OutPaintingConfig()
             self.aesthetic_predictor = AestheticPredictor()
 
+            run_compile = self.outpainting_config.get_config("outpainting", "run_compile") == "True"
+
             # init inpainting model/pipe
             inpainting_model = self.outpainting_config.get_config("outpainting",
                                                                   "inpainting_model") or "runwayml/stable-diffusion-inpainting"
@@ -27,6 +29,10 @@ class Outpainting:
                 torch_dtype=torch.float16
             )
             self.inpainting_pipe.to("cuda")
+            if run_compile:
+                self.inpainting_pipe.unet.to(memory_format=torch.channels_last)
+                self.inpainting_pipe.unet = torch.compile(self.inpainting_pipe.unet, mode="reduce-overhead",
+                                                          fullgraph=True)
 
             # init main model/pipe
             main_model = self.outpainting_config.get_config("outpainting",
@@ -37,6 +43,9 @@ class Outpainting:
                 torch_dtype=torch.float16
             )
             self.main_pipe.to("cuda")
+            if run_compile:
+                self.main_pipe.unet.to(memory_format=torch.channels_last)
+                self.main_pipe.unet = torch.compile(self.main_pipe.unet, mode="reduce-overhead", fullgraph=True)
 
     def generate_image(self, news_prompt: str = '', news_headline: str = '', news_source: str = '',
                        news_date: str = ''):

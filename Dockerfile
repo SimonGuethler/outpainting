@@ -11,7 +11,7 @@ RUN conda create --name outpainting python=3.10 && echo "conda activate outpaint
 ENV PATH /opt/conda/envs/outpainting/bin:$PATH
 
 # Install dependencies
-RUN conda install pytorch torchvision torchaudio cudatoolkit=11.3 -c pytorch -c nvidia
+RUN conda install pytorch torchvision torchaudio pytorch-cuda=11.8 -c pytorch -c nvidia
 RUN pip install --upgrade diffusers[torch] transformers accelerate Flask flask-cors waitress open-clip-torch newsapi-python
 
 # Copy the project

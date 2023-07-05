@@ -141,3 +141,7 @@ The structure should look like that in the 'prompts.json.example'.
 ```bash
 python generate.py
 ```
+
+## Replace API keys
+
+If necessary get new API keys from [NYTimes](https://developer.nytimes.com/apis) and [NewsAPI](https://newsapi.org/) and replace the legacy keys in ``config.ini``. 
